@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Kings Financial Analyser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#317EFB">
+
+    <style>
+        :root {
+            --primary: #5D5CDE;
+            --primary-light: #7C7BFF;
+            --primary-dark: #4A49C4;
+            --secondary: #ff5400;
+            --accent: #ff0054;
+            --success: #4CAF50;
+            --danger: #F44336;
+            --warning: #FFC107;
+            --info: #2196F3;
+            --light: #F8F9FA;
+            --dark: #212529;
+            --gray: #6C757D;
+            --light-bg: #FFFFFF;
+            --dark-bg: #181818;
+            --dark-card: #252525;
+            --dark-input: #333333;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            transition: var(--transition);
+        }
+
+        .dark body {
+            background-color: var(--dark-bg);
+            color: #FAFAFA;
+        }
+
+        .card {
+            border-radius: 16px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+
+        .dark .card {
+            background-color: var(--dark-card);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            border-bottom: none;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary:hover, .btn-outline-primary:focus {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #DDD;
+            transition: var(--transition);
+            font-size: 16px;
+        }
+
+        .dark .form-control, .dark .form-select {
+            background-color: var(--dark-input);
+            border-color: #444;
+            color: #FFF;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(93, 92, 222, 0.25);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: var(--transition);
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary);
+        }
+
+        .nav-pills .nav-link {
+            color: var(--primary);
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: var(--transition);
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(93, 92, 222, 0.1);
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #F8F9FA;
+            transition: var(--transition);
+        }
+
+        .dark .stat-card {
+            background-color: var(--dark-card);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: rgba(93, 92, 222, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            margin-bottom: 0;
+        }
+
+        .ai-advice-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-advice-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ai-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .dark-mode-toggle {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+
+        .dark-mode-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .transaction-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #EEE;
+            transition: var(--transition);
+        }
+
+        .dark .transaction-item {
+            border-bottom: 1px solid #333;
+        }
+
+        .transaction-item:hover {
+            background-color: rgba(93, 92, 222, 0.05);
+        }
+
+        .transaction-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .category-food { background-color: #FF9800; }
+        .category-housing { background-color: #2196F3; }
+        .category-transport { background-color: #4CAF50; }
+        .category-entertainment { background-color: #9C27B0; }
+        .category-shopping { background-color: #F44336; }
+        .category-utilities { background-color: #607D8B; }
+        .category-health { background-color: #00BCD4; }
+        .category-education { background-color: #795548; }
+
+        .transaction-amount {
+            font-weight: 600;
+        }
+
+        .amount-expense {
+            color: var(--danger);
+        }
+
+        .amount-income {
+            color: var(--success);
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #E9ECEF;
+            margin-top: 10px;
+        }
+
+        .dark .progress {
+            background-color: #333;
+        }
+
+        .progress-bar {
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .savings-goal {
+            background-color: #F8F9FA;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .dark .savings-goal {
+            background-color: var(--dark-card);
+        }
+
+        .savings-goal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .ai-advice-loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            color: var(--primary);
+        }
+
+        @media (max-width: 767px) {
+            .chart-container {
+                height: 250px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .card-header, .card-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">Kings Financial Analyser</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm me-3" onclick="clearAllData()">
+                            <i class="fas fa-trash me-1"></i> Clear All Data
+                        </button>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> <span id="userDisplayName">User</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <div class="toggle-container">
+                            <label class="dark-mode-toggle">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container py-4">
+        <div class="welcome-banner">
+            <h2 class="mb-2">Welcome back, <span id="welcomeUserName">User</span>! 👋</h2>
+            <p class="mb-0">Let's analyze your financial situation today.</p>
+        </div>
+
+        <!-- AI Advice Section -->
+        <div class="ai-advice-card">
+            <div class="text-center">
+                <i class="fas fa-brain ai-icon"></i>
+                <h3>AI Financial Advisor</h3>
+                <p id="aiAdviceText">Get personalized financial advice based on your current situation, savings, and spending patterns.</p>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-light" onclick="generateAIAdvice()">
+                    <i class="fas fa-lightbulb me-2"></i> Get AI Financial Advice
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Overview -->
+        <div class="row">
+            <!-- Financial Summary -->
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Financial Overview</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown">
+                                This Month
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-range="week">This Week</a></li>
+                                <li><a class="dropdown-item active" href="#" data-range="month">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="quarter">This Quarter</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="year">This Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <div class="stat-card d-flex align-items-center">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <div>
+                                        <p class="stat-value" id="totalIncomeValue">KSh 0</p>
+                                        <p class="stat-label">Total Income</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <div class="stat-card d-flex align-items-center">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div>
+                                        <p class="stat-value" id="totalExpenseValue">KSh 0</p>
+                                        <p class="stat-label">Total Expenses</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-card d-flex align-items-center">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-piggy-bank"></i>
+                                    </div>
+                                    <div>
+                                        <p class="stat-value" id="savingsValue">KSh 0</p>
+                                        <p class="stat-label">Net Savings</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="incomeExpenseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary" onclick="showAddTransactionModal()">
+                                <i class="fas fa-plus me-2"></i> Add Transaction
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showBudgetTab()">
+                                <i class="fas fa-chart-pie me-2"></i> Set Budget
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showSavingsTab()">
+                                <i class="fas fa-piggy-bank me-2"></i> Add Savings Goal
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="generateAIAdvice()">
+                                <i class="fas fa-brain me-2"></i> Get AI Advice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <ul class="nav nav-pills mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions" type="button" role="tab">Transactions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="budget-tab" data-bs-toggle="tab" data-bs-target="#budget" type="button" role="tab">Budget</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="savings-tab" data-bs-toggle="tab" data-bs-target="#savings" type="button" role="tab">Savings Goals</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">Reports</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mainTabsContent">
+            <!-- Transactions Tab -->
+            <div class="tab-pane fade show active" id="transactions" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Recent Transactions</span>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary active" onclick="filterTransactions('all')">All</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="filterTransactions('income')">Income</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="filterTransactions('expense')">Expenses</button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0" id="transactionsList">
+                                <div class="empty-state">
+                                    <i class="fas fa-receipt"></i>
+                                    <h4>No transactions yet</h4>
+                                    <p>Start by adding your first transaction to track your finances.</p>
+                                    <button class="btn btn-primary" onclick="showAddTransactionModal()">
+                                        <i class="fas fa-plus me-2"></i> Add First Transaction
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">Add Transaction</div>
+                            <div class="card-body">
+                                <form id="transactionForm">
+                                    <div class="mb-3">
+                                        <label for="transactionType" class="form-label">Type</label>
+                                        <select class="form-select" id="transactionType" required>
+                                            <option value="expense">Expense</option>
+                                            <option value="income">Income</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transactionAmount" class="form-label">Amount (KSh)</label>
+                                        <input type="number" class="form-control" id="transactionAmount" min="0" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transactionCategory" class="form-label">Category</label>
+                                        <select class="form-select" id="transactionCategory" required>
+                                            <option value="" selected disabled>Select category</option>
+                                            <option value="salary" class="income-category">Salary</option>
+                                            <option value="freelance" class="income-category">Freelance</option>
+                                            <option value="investment" class="income-category">Investment</option>
+                                            <option value="other-income" class="income-category">Other Income</option>
+                                            <option value="food">Food & Dining</option>
+                                            <option value="housing">Housing</option>
+                                            <option value="transport">Transportation</option>
+                                            <option value="entertainment">Entertainment</option>
+                                            <option value="shopping">Shopping</option>
+                                            <option value="utilities">Utilities</option>
+                                            <option value="health">Health</option>
+                                            <option value="education">Education</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transactionDate" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="transactionDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transactionDescription" class="form-label">Description</label>
+                                        <input type="text" class="form-control" id="transactionDescription" placeholder="e.g. Grocery shopping">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-plus me-2"></i> Add Transaction
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Tab -->
+            <div class="tab-pane fade" id="budget" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">Budget Overview</div>
+                            <div class="card-body" id="budgetOverview">
+                                <div class="empty-state">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <h4>No budgets set</h4>
+                                    <p>Create your first budget to track spending by category.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">Add Budget</div>
+                            <div class="card-body">
+                                <form id="budgetForm">
+                                    <div class="mb-3">
+                                        <label for="budgetCategory" class="form-label">Category</label>
+                                        <select class="form-select" id="budgetCategory" required>
+                                            <option value="" selected disabled>Select category</option>
+                                            <option value="food">Food & Dining</option>
+                                            <option value="housing">Housing</option>
+                                            <option value="transport">Transportation</option>
+                                            <option value="entertainment">Entertainment</option>
+                                            <option value="shopping">Shopping</option>
+                                            <option value="utilities">Utilities</option>
+                                            <option value="health">Health</option>
+                                            <option value="education">Education</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="budgetAmount" class="form-label">Monthly Budget (KSh)</label>
+                                        <input type="number" class="form-control" id="budgetAmount" min="0" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-save me-2"></i> Save Budget
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Goals Tab -->
+            <div class="tab-pane fade" id="savings" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Savings Goals</div>
+                            <div class="card-body" id="savingsGoalsList">
+                                <div class="empty-state">
+                                    <i class="fas fa-bullseye"></i>
+                                    <h4>No savings goals yet</h4>
+                                    <p>Set your first savings goal to start building your future.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Add Savings Goal</div>
+                            <div class="card-body">
+                                <form id="goalForm">
+                                    <div class="mb-3">
+                                        <label for="goalName" class="form-label">Goal Name</label>
+                                        <input type="text" class="form-control" id="goalName" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="goalAmount" class="form-label">Target Amount (KSh)</label>
+                                        <input type="number" class="form-control" id="goalAmount" min="0" step="0.01" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="goalDate" class="form-label">Target Date</label>
+                                        <input type="date" class="form-control" id="goalDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="initialSaving" class="form-label">Initial Contribution (KSh)</label>
+                                        <input type="number" class="form-control" id="initialSaving" min="0" step="0.01" value="0">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-plus me-2"></i> Create Goal
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">Expense Categories</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="expenseCategoryChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">Spending Trends</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="spendingTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal fade" id="addTransactionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quickTransactionForm">
+                        <div class="mb-3">
+                            <label for="quickTransactionType" class="form-label">Type</label>
+                            <select class="form-select" id="quickTransactionType" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quickTransactionAmount" class="form-label">Amount (KSh)</label>
+                            <input type="number" class="form-control" id="quickTransactionAmount" min="0" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quickTransactionCategory" class="form-label">Category</label>
+                            <select class="form-select" id="quickTransactionCategory" required>
+                                <option value="" selected disabled>Select category</option>
+                                <option value="salary" class="income-category">Salary</option>
+                                <option value="freelance" class="income-category">Freelance</option>
+                                <option value="investment" class="income-category">Investment</option>
+                                <option value="other-income" class="income-category">Other Income</option>
+                                <option value="food">Food & Dining</option>
+                                <option value="housing">Housing</option>
+                                <option value="transport">Transportation</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="health">Health</option>
+                                <option value="education">Education</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quickTransactionDescription" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="quickTransactionDescription" placeholder="e.g. Grocery shopping">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i> Add Transaction
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
