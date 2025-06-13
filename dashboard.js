@@ -40,35 +40,7 @@
             updateBudgetOverview();
             updateSavingsGoalsList();
         });
-
-        // Dark mode functionality
-        function initDarkMode() {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-
-            document.getElementById('darkModeToggle').addEventListener('change', function() {
-                if (this.checked) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-                updateChartsTheme();
-            });
-
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-                if (event.matches) {
-                    document.documentElement.classList.add('dark');
-                    document.getElementById('darkModeToggle').checked = true;
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    document.getElementById('darkModeToggle').checked = false;
-                }
-                updateChartsTheme();
-            });
-        }
-
+        
         // Initialize event listeners
         function initEventListeners() {
             // Transaction form
